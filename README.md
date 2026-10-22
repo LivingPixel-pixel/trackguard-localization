@@ -22,8 +22,8 @@ These are consumed, same-session development results with one initial truth seed
 
 ## Explore
 
-- [Interactive performance dashboard](index.html)
-- [Six-slide business pitch](slides/trackguard-pitch.pdf), [editable PowerPoint](slides/trackguard-pitch.pptx) and [browser slides](slides/slides.html)
+- [Live performance dashboard](https://livingpixel-pixel.github.io/trackguard-localization/)
+- [Six-slide business pitch](https://livingpixel-pixel.github.io/trackguard-localization/slides/trackguard-pitch.pdf), [editable PowerPoint](https://livingpixel-pixel.github.io/trackguard-localization/slides/trackguard-pitch.pptx) and [browser slides](https://livingpixel-pixel.github.io/trackguard-localization/slides/slides.html)
 - [Engine and input contract](docs/ENGINE.md)
 - [Metric definitions and limits](docs/EVIDENCE.md)
 
