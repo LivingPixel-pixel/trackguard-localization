@@ -8,14 +8,16 @@ The synthetic CLI sent generated pixels through actual SIFT extraction, map geom
 
 ## Dashboard and assets
 
-Browser checks exercised all five evaluation windows, including the null-RMSE day state and the failed stress coverage state. The JSON source and embedded offline snapshot match. Animation pause/play switches between the GIF and static poster. Desktop and 390-pixel layouts showed no global horizontal overflow. Reduced-motion handling and keyboard controls are implemented.
+The measured replay retains all 460 sealed development rows, 49 unavailable outputs and one unscored seed. The exporter checked input pins, exact timestamp alignment and existing position/lateral RMSE within `1e-9`. New yaw and longitudinal metrics use the same scored poses. No inference was rerun.
 
-The synthetic GIF contains 80 frames and an explicit unavailable interval. A smaller 40-frame version supports the website card. Neither reads partner data.
+Both real-track GIFs contain 72 sampled frames over 7.2 seconds. Every saved frame decoded successfully. The interactive replay uses all rows, with synchronized position, yaw and directional error charts, a discrete scrubber and 10-second rolling metrics. Missing errors stay null. Reference truth is evaluation-only.
+
+Browser checks at 1440 and 390 pixels found no page overflow. Scrubbing covered the seed, unavailable rows, the lap boundary and the final frame; current errors and all three cursors agreed. At 32x, playback advanced and remained stable after pausing. Aggregate window changes left the replay frame unchanged; day RMSE stayed unavailable and stress coverage stayed 72%. An independent review recomputed public row aggregates within `4.79e-10`, checked rolling metrics and gaps, and found no P1/P2 blockers.
 
 ## Slides and release boundary
 
 All six PowerPoint slides and PDF pages were rendered for inspection. Automated export checks reported zero text overflow, correct metric values, editable text/tables and no external relationships or private absolute file paths. Browser slides have six-page navigation and no remote asset dependency.
 
-`python scripts/check_release.py` verifies aggregate parity, denominators, required files, local links, slide count and the public data boundary. The repository CI repeats the software and release checks. CI status is reported by GitHub, rather than inferred from the local run.
+`python scripts/check_release.py` verifies replay/aggregate parity, seed and unavailable membership, directional-error consistency, denominators, required files, local links, slide count and the public data boundary. The repository CI repeats the software and release checks. CI status is reported by GitHub, rather than inferred from the local run.
 
-The original same-session measurements remain documented in `docs/EVIDENCE.md`. A private recording replay, independent-session 20 cm result, GPU timing and live vehicle deployment are outside this release's verification.
+The original same-session measurements remain documented in `docs/EVIDENCE.md`. Exact R16 inference reproduction through the portable package, independent-session 20 cm accuracy, GPU timing and live vehicle deployment remain unverified.

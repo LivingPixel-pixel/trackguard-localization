@@ -1,4 +1,4 @@
-/* Exact approved aggregate snapshot. Synced with data/metrics.json. No raw recordings. */
+/* Exact public aggregate snapshot. Synced with data/metrics.json. */
 const EMBEDDED_METRICS = {
   "schema": "trackguard-public-aggregates-v1",
   "product": "TrackGuard",
@@ -27,7 +27,16 @@ const EMBEDDED_METRICS = {
       "position_max_m": 0.5874495693389843,
       "within20cm_all_planned_percent": 71.24183006535948,
       "within20cm_count": 327,
-      "scored_planned_excluding_seed": 459
+      "scored_planned_excluding_seed": 459,
+      "paired_scored_frames": 410,
+      "longitudinal_rmse_m": 0.13228876131541847,
+      "yaw_rmse_deg": 0.10694967979624358,
+      "absolute_lateral_p95_m": 0.25184152755336653,
+      "absolute_lateral_max_m": 0.5706257251895852,
+      "absolute_longitudinal_p95_m": 0.2595835414358725,
+      "absolute_longitudinal_max_m": 0.39985447463360063,
+      "absolute_yaw_p95_deg": 0.21044725023463787,
+      "absolute_yaw_max_deg": 0.41764192530648103
     },
     {
       "id": "lap6",
@@ -41,7 +50,19 @@ const EMBEDDED_METRICS = {
       "unavailable": 24,
       "seed_count": 1,
       "qualified": true,
-      "note": "First slice of the same continuous run."
+      "note": "First slice of the same continuous run.",
+      "paired_scored_frames": 216,
+      "longitudinal_rmse_m": 0.12705836757289463,
+      "yaw_rmse_deg": 0.1029982072922213,
+      "position_median_m": 0.1265178343356524,
+      "position_p95_m": 0.27155499693744534,
+      "position_max_m": 0.4094843904783589,
+      "absolute_lateral_p95_m": 0.1684383489139666,
+      "absolute_lateral_max_m": 0.4009659950046245,
+      "absolute_longitudinal_p95_m": 0.24847089962561614,
+      "absolute_longitudinal_max_m": 0.37244033839961094,
+      "absolute_yaw_p95_deg": 0.1955197070459805,
+      "absolute_yaw_max_deg": 0.41764192530648103
     },
     {
       "id": "lap7",
@@ -55,7 +76,19 @@ const EMBEDDED_METRICS = {
       "unavailable": 25,
       "seed_count": 0,
       "qualified": true,
-      "note": "Continues lap 6 state. No lap 7 reseed."
+      "note": "Continues lap 6 state. No lap 7 reseed.",
+      "paired_scored_frames": 194,
+      "longitudinal_rmse_m": 0.1378790501170403,
+      "yaw_rmse_deg": 0.11118415371230454,
+      "position_median_m": 0.1433511986053615,
+      "position_p95_m": 0.3540013045793492,
+      "position_max_m": 0.5874495693389843,
+      "absolute_lateral_p95_m": 0.3148103524111429,
+      "absolute_lateral_max_m": 0.5706257251895852,
+      "absolute_longitudinal_p95_m": 0.2966079463838835,
+      "absolute_longitudinal_max_m": 0.39985447463360063,
+      "absolute_yaw_p95_deg": 0.22418593375853907,
+      "absolute_yaw_max_deg": 0.41586262109084154
     },
     {
       "id": "stress",
@@ -105,9 +138,20 @@ const EMBEDDED_METRICS = {
     "Unavailable outputs remain in coverage accounting. No later-lap reset or future observation is permitted.",
     "The nominal 0.20 m uncertainty publication threshold is uncalibrated. It is not a bound on actual position error.",
     "Day coverage uses 74 camera-time bins because no ground-truth interval is available. It is not an organizer RMSE or ranking score.",
-    "All graphics showing a course, vehicle or trajectory in this public release use synthetic geometry and illustrative motion. They do not depict partner recordings or measured per-frame estimates.",
+    "The track-replay graphics show the real sealed R16 development run as derived display pixels and errors. The reference is evaluator-only. All 460 rows and 49 unavailable estimates remain represented; raw world poses and labels stay local.",
     "No measured hardware cost saving, safety certification, customer deployment, 4090 latency, live 10 Hz performance or independent-session 20 cm result is claimed."
-  ]
+  ],
+  "measured_replay": {
+    "schema": "trackguard-measured-replay-v1",
+    "path": "data/replay.json",
+    "reference_scope": "Evaluation-only reference after sealed inference",
+    "accuracy_scope": "Published eligible non-seed observations; no lap 7 reseed",
+    "supersedes_synthetic_graphics_note_for": "assets/track-replay* only",
+    "yaw_definition": "Wrapped signed estimate minus reference degrees",
+    "longitudinal_definition": "Signed error along reference heading",
+    "tail_definition": "Linear-interpolated 95th percentile of absolute errors",
+    "new_aggregates_computed_before_rounding": true
+  }
 };
 
 (() => {
@@ -162,6 +206,9 @@ const EMBEDDED_METRICS = {
     $('window-buttons').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.window===id)));
     setText('selected-title',w.label);setText('selected-kind',w.kind);setText('selected-status',result(w));$('selected-status').classList.toggle('warn',!w.qualified);setText('window-note',w.note);
     metric('position-value',finite(w.position_rmse_m)?w.position_rmse_m*100:null,'cm');metric('lateral-value',finite(w.lateral_rmse_m)?w.lateral_rmse_m*100:null,'cm');metric('coverage-value',w.coverage_percent,'%');metric('publication-value',publication(w),'%');
+    metric('longitudinal-value',finite(w.longitudinal_rmse_m)?w.longitudinal_rmse_m*100:null,'cm');metric('yaw-value',w.yaw_rmse_deg,'°');
+    setText('longitudinal-caption',finite(w.longitudinal_rmse_m)?`Along reference heading · absolute p95 ${cm(w.absolute_longitudinal_p95_m)}`:id==='day'?'No initialized pose':'No aggregate supplied for this window');
+    setText('yaw-caption',finite(w.yaw_rmse_deg)?`${finite(w.absolute_yaw_p95_deg)?`Absolute p95 ${w.absolute_yaw_p95_deg.toFixed(3)}° · `:''}published non-seed poses`:id==='day'?'No initialized pose':'No aggregate supplied for this window');
     setText('position-caption',finite(w.position_rmse_m)?`Target ≤ ${state.data.target.position_rmse_m*100} cm · published poses`:'Fusion never initialized');setText('lateral-caption',finite(w.lateral_rmse_m)?`Target ≤ ${state.data.target.lateral_rmse_m*100} cm · across heading`:'No approved geometric fix');setText('coverage-caption',`${w.coverage_percent>=state.data.target.coverage_percent?'Meets':'Below'} ${state.data.target.coverage_percent}% occupied-bin target`);$('coverage-caption').classList.toggle('fail',w.coverage_percent<state.data.target.coverage_percent);setText('publication-caption',`${w.published} / ${w.planned} planned · ${w.unavailable} unavailable`);
     setText('p95-value',finite(w.position_p95_m)?cm(w.position_p95_m):'Not reported');setText('distribution-caption',finite(w.position_median_m)?`Median ${cm(w.position_median_m)} · max ${cm(w.position_max_m)}`:id==='day'?'No initialization; no error distribution':'No distribution supplied for this window');setText('within-value',finite(w.within20cm_all_planned_percent)?percent(w.within20cm_all_planned_percent,2):'Not reported');setText('within-caption',finite(w.within20cm_all_planned_percent)?`${w.within20cm_count} / ${w.scored_planned_excluding_seed} planned, excluding seed`:id==='day'?'No ground-truth scoring interval':'No within-20-cm aggregate supplied');
     setText('accuracy-footnote',id==='day'?'No ground-truth labels or initialized pose. No RMSE can be computed.':'Only finite published estimates contribute to RMSE. The single initial truth seed is excluded from local error scoring.');
@@ -173,19 +220,13 @@ const EMBEDDED_METRICS = {
     $('window-buttons').innerHTML=data.windows.map(w=>`<button class="window-button" data-window="${w.id}" type="button" aria-pressed="false">${labels[w.id]}</button>`).join('');
     $('window-buttons').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>select(b.dataset.window)));
     const stress=data.windows.find(w=>w.id==='stress');setText('stress-summary',`Stress: ${percent(stress.coverage_percent)} coverage`);
-    $('method-list').innerHTML=data.methodology.map(m=>`<li>${escape(m)}</li>`).join('');
+    const methods=data.methodology.map(m=>data.measured_replay && m.startsWith('All graphics showing a course')?'The measured replay uses real recorded development data and rendered track bounds. Reference markers are evaluation-only, after sealed inference. Public replay coordinates are rounded display pixels. No future reference enters inference.':m);
+    if(data.measured_replay)methods.push('Yaw error is signed estimate minus reference, wrapped to ±180 degrees. Longitudinal error is signed along reference heading. The initial seed is excluded from all replay accuracy measures.');
+    $('method-list').innerHTML=methods.map(m=>`<li>${escape(m)}</li>`).join('');
     const runtime=data.runtime;setText('runtime-source',runtime.source);setText('runtime-hardware',`${runtime.hardware} · ${runtime.numerical_threads} numerical threads · ${runtime.sampling_hz} Hz sampling`);$('runtime-mean').innerHTML=`${runtime.mean_ms.toFixed(3)}<small>ms</small>`;$('runtime-p95').innerHTML=`${runtime.p95_ms.toFixed(3)}<small>ms</small>`;setText('runtime-boundary',`${runtime.offline_setup_s.toFixed(3)} s offline setup. This is not R16 end-to-end latency. No measured GPU or live performance.`);
     setText('recorded-date',`Aggregate snapshot · ${data.recorded_at}`);select(state.selected);
   }
-  const media=window.matchMedia('(prefers-reduced-motion: reduce)');
-  const demo=$('localization-demo'), toggle=$('animation-toggle');
-  function setAnimation(playing) {
-    state.playing=playing;demo.hidden=false;demo.src=playing?'assets/localization.gif':'assets/localization-poster.png';toggle.textContent=playing?'Pause animation':'Play animation';toggle.setAttribute('aria-pressed',String(playing));
-  }
-  demo.addEventListener('error',()=>{demo.hidden=true;state.playing=false;toggle.textContent='Play animation';toggle.setAttribute('aria-pressed','false');});
-  toggle.addEventListener('click',()=>setAnimation(!state.playing));
-  if (media.addEventListener) media.addEventListener('change',e=>{if(e.matches)setAnimation(false);});
-  render(EMBEDDED_METRICS);setAnimation(!media.matches);
+  render(EMBEDDED_METRICS);
   // file:// uses the exact embedded snapshot; HTTP refreshes from the approved sibling JSON.
   if (window.location.protocol!=='file:') {
     fetch('data/metrics.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw Error('Aggregate JSON unavailable');return response.json();}).then(data=>{

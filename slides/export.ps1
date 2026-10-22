@@ -25,6 +25,11 @@ try {
         foreach($o in $s.objects){
             $sh=$null
             switch($o.type){
+                'image' {
+                    $imagePath=Join-Path (Split-Path -Parent $deckRoot) $o.src
+                    $sh=$sl.Shapes.AddPicture($imagePath,0,-1,[single]($o.x*$scale),[single]($o.y*$scale),[single]($o.w*$scale),[single]($o.h*$scale))
+                    $sh.AlternativeText=$o.alt
+                }
                 'text' {
                     $sh=$sl.Shapes.AddTextbox(1,[single]($o.x*$scale),[single]($o.y*$scale),[single]($o.w*$scale),[single]($o.h*$scale))
                     StyleText $sh $o

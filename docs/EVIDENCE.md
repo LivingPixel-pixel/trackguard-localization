@@ -1,6 +1,6 @@
 # What the numbers establish
 
-The public dashboard reads `data/metrics.json`, a curated aggregate summary of the local campaign measured on 22 October 2026. It contains no per-frame positions, images, feature descriptors, track geometry or hidden labels.
+The public dashboard reads `data/metrics.json` and a derived display replay in `data/replay.json`. The replay contains relative time, rounded screen pixels and measured errors from the sealed R16 development run. Raw recordings, world-coordinate poses, calibration, feature descriptors and label files remain local.
 
 ## Accuracy and availability
 
@@ -28,6 +28,10 @@ The earlier raw geometry profile measured 379.491 ms mean and 484.995 ms p95 per
 
 ## Public release boundary
 
-All course and trajectory graphics in this repo are generated from original synthetic geometry. They are explanatory illustrations, not recordings, benchmark plots or demonstrations of measured precision. The GIF generator has no dataset inputs.
+The track animation and synchronized error charts use the real sealed R16 continuous laps 6 + 7, including all 460 planned frames and 49 unavailable outputs. The reference trajectory is evaluator-only. The initial seed is unscored. Missing estimates create chart and trail gaps; they are never interpolated or assigned zero error. The accelerated GIF samples the display; the interactive replay retains every row.
+
+Yaw error is the wrapped estimate-minus-reference heading in degrees. Lateral and longitudinal errors project the position difference across and along the reference heading. Trailing 10-second position RMSE uses finite scored estimates. Trailing frame publication includes every planned row and differs from occupied one-second coverage. The overview map cannot resolve centimeter-scale differences; the error charts provide that scale.
+
+The architecture diagrams and portable engine's synthetic example remain illustrative software explanations. They are separate from measured replay evidence. See [the replay contract](REPLAY.md) for exact export rules.
 
 No customer deployment, production safety qualification, measured financial saving, winner comparison or universal 20 cm result is claimed. The next proof is a separately defined customer pilot.

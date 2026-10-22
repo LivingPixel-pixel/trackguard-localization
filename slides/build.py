@@ -16,7 +16,7 @@ W = {w['id']:w for w in M['windows']}
 C = dict(marine='#102C3A',mist='#F1F5F4',white='#FFFFFF',teal='#007D7D',amber='#A45B00',slate='#4D626B',line='#D1DEDE',light='#B4CBCF',pale='#E0EEEE')
 slides=[]
 def slide(title,bg='mist'):
-    s={'title':title,'bg':C.get(bg,bg),'objects':[],'notes':'Source: data/metrics.json (approved public aggregates, 2026-10-22). Design: docs/DESIGN_CONTRACT.md. Course and vehicle graphics are synthetic illustrative geometry. No partner recordings or measured per-frame poses.'}
+    s={'title':title,'bg':C.get(bg,bg),'objects':[],'notes':'Source: data/metrics.json and data/replay.json (approved derived evaluation display, 2026-10-22). The cover shows the real sealed R16 development replay. Architecture diagrams are illustrative. Raw recordings, world-coordinate poses and labels remain local.'}
     slides.append(s);return s
 def add(s,t,**kw):
     o={'type':t,**kw};s['objects'].append(o);return o
@@ -26,6 +26,8 @@ def text(s,x,y,w,h,t,size=28,color='marine',bold=False,font='Segoe UI',align='le
 def line(s,x,y,x2,y2,color='line',sw=2,dash=False):return add(s,'line',x=x,y=y,x2=x2,y2=y2,color=C.get(color,color),sw=sw,dash=dash)
 def ellipse(s,x,y,w,h,fill='teal',stroke=None,sw=2):return add(s,'ellipse',x=x,y=y,w=w,h=h,fill=C.get(fill,fill),stroke=C.get(stroke,stroke),sw=sw)
 def path(s,points,color='teal',sw=4,dash=False):return add(s,'path',points=points,color=C.get(color,color),sw=sw,dash=dash)
+
+def image(s,x,y,w,h,src,alt):return add(s,'image',x=x,y=y,w=w,h=h,src=src,alt=alt)
 def header(s,kicker,title):
     text(s,72,43,1300,30,kicker.upper(),19,'teal',True)
     text(s,72,90,1450,112,title,52,'marine',True)
@@ -35,23 +37,6 @@ def footer(s,n,dark=False):
     text(s,1460,839,68,34,f'{n:02}',22,col,font='Consolas',align='right')
 def table(s,x,y,width,widths,rows,rowh=58):
     return add(s,'table',x=x,y=y,w=width,h=rowh*len(rows),widths=widths,rows=rows,rowh=rowh)
-def course(s,x,y,w,h):
-    # Explicitly requested editable synthetic course diagram.
-    pts=[(0.12,.55),(.16,.26),(.32,.13),(.68,.15),(.86,.32),(.87,.56),(.70,.75),(.42,.80),(.22,.70),(.12,.55)]
-    pp=[[x+a*w,y+b*h] for a,b in pts]
-    path(s,pp,'line',48)
-    path(s,pp,'white',32)
-    path(s,pp,'light',2,True)
-    route=[[x+.18*w,y+.55*h],[x+.22*w,y+.31*h],[x+.34*w,y+.23*h],[x+.65*w,y+.25*h],[x+.77*w,y+.37*h]]
-    path(s,route,'teal',8)
-    # Missing interval deliberately has no teal pose line.
-    path(s,[[x+.77*w,y+.37*h],[x+.79*w,y+.54*h],[x+.69*w,y+.65*h]],'amber',5,True)
-    cx=x+.65*w;cy=y+.25*h
-    ellipse(s,cx-25,cy-25,50,50,'pale','teal',3)
-    box(s,cx-21,cy-11,42,22,'marine')
-    box(s,cx-8,cy-8,13,16,'white')
-    return cx,cy
-
 # 1. Actual solution and explicit output states in the first ten seconds.
 s=slide('Vehicle localization from the cameras you already run','marine')
 box(s,815,0,785,900,'mist')
@@ -60,9 +45,9 @@ text(s,72,148,710,285,'Vehicle localization\nfrom the cameras\nyou already run',
 text(s,75,470,658,155,'Seven calibrated cameras, a reference map and motion signals produce one shared vehicle pose.',30,'white')
 line(s,75,678,720,678,'slate',2)
 text(s,75,712,650,84,'When geometric evidence is insufficient, the output is unavailable.',28,'light')
-text(s,875,60,660,55,'SYNTHETIC ILLUSTRATIVE GEOMETRY',21,'slate',True)
-course(s,848,190,700,400)
-text(s,890,595,620,55,'One pose. An explicit unavailable state.',27,'marine',True)
+text(s,857,60,680,55,'REAL TRACK / SEALED DEVELOPMENT REPLAY',21,'slate',True)
+image(s,840,175,720,405,'assets/track-replay-poster.png','Measured R16 track replay with position and yaw error. Reference is evaluation-only; missing outputs remain gaps.')
+text(s,875,612,645,40,'Laps 6 + 7. One seed. 49 unavailable outputs.',24,'marine',True)
 box(s,875,670,280,122,'white')
 line(s,875,670,1155,670,'teal',6)
 text(s,897,689,240,40,'POSE AVAILABLE',22,'teal',True)
@@ -74,7 +59,7 @@ text(s,1202,733,290,38,'No pose published',23,'slate')
 footer(s,1,True)
 # Cover footer on light half needs dark ink.
 s['objects'][-1]['color']=C['slate']
-s['notes']+=' Opening uses the design contract verbatim. Diagram shows possible output semantics, not live throughput or accuracy.'
+s['notes']+=' Recorded real-track replay of the selected R16 run; its reference is evaluator-only after sealed inference. Animation is accelerated and does not measure live throughput. The interactive dashboard retains all 460 rows.'
 
 # 2. Customer and decision. The potential value remains a hypothesis.
 s=slide('The customer decision: evaluate an additional position signal')
@@ -134,12 +119,13 @@ for x,key,label,unit in [(72,'position_rmse_m','Position RMSE','cm'),(574,'later
     text(s,x,389,440,45,label,28,'marine',True)
     text(s,x,441,440,36,'Target ≤20cm' if unit=='cm' else 'Target ≥90%',24,'slate')
 line(s,72,510,1528,510,'line',2)
-table(s,72,543,1456,[.34,.22,.44],[
+table(s,72,532,1456,[.34,.25,.41],[
     ['Metric','Observed','How to read it'],
     ['Position error, p95',f"{100*d['position_p95_m']:.2f}cm",'RMSE is not a per-output guarantee'],
+    ['Yaw / longitudinal RMSE',f"{d['yaw_rmse_deg']:.3f}° / {100*d['longitudinal_rmse_m']:.2f}cm",'Wrapped heading / along-track position'],
     ['Within 20cm, all planned',f"{d['within20cm_all_planned_percent']:.2f}%",f"{d['within20cm_count']}/{d['scored_planned_excluding_seed']} non-seed frames, unavailable = miss"],
     ['Published / unavailable',f"{d['published']} / {d['unavailable']}",f"{d['planned']} planned, {100*d['published']/d['planned']:.2f}% publication fraction"],
-],rowh=56)
+],rowh=48)
 text(s,73,788,1448,46,'Coverage counts occupied one-second bins. Development data is consumed, not untouched validation.',23,'slate')
 footer(s,4)
 s['notes']+=' Position RMSE sqrt(mean(dx^2+dy^2)) on finite published estimates, excluding initial truth seed. Lateral error projects across ground-truth heading. One-second coverage differs from publication fraction. '+json.dumps(d,separators=(',',':'))
@@ -194,6 +180,10 @@ assert len(slides)==6
 
 def svg_obj(o):
     t=o['type'];f=o.get('fill') or 'none';st=o.get('stroke') or 'none'
+    if t=='image':
+        p=ROOT.parent/o['src']
+        encoded=base64.b64encode(p.read_bytes()).decode()
+        return f'<image x="{o["x"]}" y="{o["y"]}" width="{o["w"]}" height="{o["h"]}" href="data:image/png;base64,{encoded}" preserveAspectRatio="xMidYMid meet"><title>{html.escape(o["alt"])}</title></image>'
     if t in ('rect','ellipse'):
         if t=='rect':a=f'x="{o["x"]}" y="{o["y"]}" width="{o["w"]}" height="{o["h"]}"'
         else:a=f'cx="{o["x"]+o["w"]/2}" cy="{o["y"]+o["h"]/2}" rx="{o["w"]/2}" ry="{o["h"]/2}"'
@@ -240,18 +230,18 @@ for i,s in enumerate(slides,1):
     svgs.append(a)
     (BUILD/f'slide-{i}.svg').write_text(a,encoding='utf-8')
 
-# Use supplied synthetic animation only when present. No network, videos or partner assets.
-gif=ROOT.parent/'assets/localization-card.gif';poster=ROOT.parent/'assets/localization-poster.png'
+# Use the derived real-track replay. No raw recording or video is embedded.
+gif=ROOT.parent/'assets/track-replay-card.gif';poster=ROOT.parent/'assets/track-replay-poster.png'
 media=''
 if gif.exists() and poster.exists():
     gd=base64.b64encode(gif.read_bytes()).decode();pd=base64.b64encode(poster.read_bytes()).decode()
-    media=f'<aside class="demo" aria-label="Supplementary synthetic animation"><h2>Synthetic illustrative geometry</h2><img id="animation" src="data:image/png;base64,{pd}" alt="Synthetic vehicle pose stream with visible unavailable intervals. Not measured per-frame results." data-poster="data:image/png;base64,{pd}" data-motion="data:image/gif;base64,{gd}"><button id="motion" type="button" aria-pressed="false">Play illustrative animation</button></aside>'
+    media=f'<aside class="demo" aria-label="Measured track replay"><h2>The real track, with synchronized errors</h2><p>Accelerated R16 development replay. Reference is evaluation-only. Missing outputs remain gaps.</p><img id="animation" src="data:image/png;base64,{pd}" alt="Real track with the recorded estimate, reference and synchronized position and yaw errors." data-poster="data:image/png;base64,{pd}" data-motion="data:image/gif;base64,{gd}"><button id="motion" type="button" aria-pressed="false">Play measured replay</button></aside>'
 sections=''.join(f'<section class="slide" id="slide-{i}" aria-label="Slide {i} of 6" tabindex="-1">{a}</section>' for i,a in enumerate(svgs,1))
 transcript=''.join('<details><summary>Slide '+str(i)+': '+html.escape(s['title'])+'</summary><div>'+''.join('<p>'+html.escape(o['text']).replace('\n','<br>')+'</p>' for o in s['objects'] if o['type']=='text')+(''.join('<table>'+''.join('<tr>'+''.join(('<th>' if j==0 else '<td>')+html.escape(c)+('</th>' if j==0 else '</td>') for c in row)+'</tr>' for j,row in enumerate(o['rows']))+'</table>' for o in s['objects'] if o['type']=='table'))+'<p>'+html.escape(s['notes'])+'</p></div></details>' for i,s in enumerate(slides,1))
 doc='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TrackGuard | Customer pilot brief</title><style>
 *{box-sizing:border-box}body{margin:0;background:#F1F5F4;color:#102C3A;font:18px 'Segoe UI',sans-serif}a{color:#007D7D}nav{display:flex;gap:12px;align-items:center;justify-content:center;padding:16px;flex-wrap:wrap}button,a.control{border:1px solid #4D626B;background:white;color:#102C3A;padding:10px 18px;border-radius:3px;font:inherit;cursor:pointer}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #A45B00;outline-offset:3px}main{max-width:1600px;margin:auto}.slide{display:none}.slide.active{display:block}.slide svg{display:block;width:100%;height:auto}.help{text-align:center;color:#4D626B;font-size:15px;padding:0 12px}#transcript{max-width:1000px;margin:25px auto;padding:20px}summary{cursor:pointer;font-weight:600;padding:15px 0}details div{padding:0 10px 20px}table{border-collapse:collapse;width:100%}td,th{padding:9px;border:1px solid #D1DEDE;text-align:left}aside.demo{max-width:900px;margin:30px auto;padding:24px;background:#fff}aside.demo img{width:100%;display:block;margin-bottom:15px}h2{font-size:24px}.skip{position:absolute;left:-10000px}.skip:focus{left:10px;top:10px;background:white;padding:12px;z-index:3}@media(max-width:650px){nav{gap:6px;padding:10px}button,a.control{font-size:15px;padding:9px}#transcript{margin-top:5px;padding:16px}.help{font-size:14px}}@media print{@page{size:landscape;margin:0}body{background:white}nav,.help,#transcript,.demo,.skip{display:none!important}main{max-width:none}.slide{display:block!important;break-after:page;page-break-after:always}.slide:last-child{break-after:auto}.slide svg{width:100%;max-height:100%;aspect-ratio:16/9}}
 </style></head><body><a href="#transcript" class="skip">Skip to accessible slide text</a><nav aria-label="Presentation controls"><button id="prev" aria-label="Previous slide">Previous</button><span id="status" role="status" aria-live="polite">Slide 1 of 6</span><button id="next" aria-label="Next slide">Next</button><button id="print">Print / save PDF</button><a class="control" href="#transcript">Accessible text</a></nav><p class="help">Left / Right arrows or Page Up / Down. Home / End. Keys 1–6. P to print. No network required.</p><main>'''+sections+'''</main>'''+media+'''<section id="transcript" aria-label="Accessible slide text"><h2>Slide text and evidence notes</h2>'''+transcript+'''</section><script>
-const slides=[...document.querySelectorAll('.slide')];let current=0;function show(n){current=Math.max(0,Math.min(5,n));slides.forEach((s,i)=>{s.classList.toggle('active',i===current);s.setAttribute('aria-hidden',i!==current)});document.getElementById('status').textContent=`Slide ${current+1} of 6`;document.getElementById('prev').disabled=current===0;document.getElementById('next').disabled=current===5;history.replaceState(null,'','#'+(current+1))}document.getElementById('prev').onclick=()=>show(current-1);document.getElementById('next').onclick=()=>show(current+1);document.getElementById('print').onclick=()=>window.print();document.addEventListener('keydown',e=>{if(/input|textarea|select/i.test(e.target.tagName))return;if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(current+1)}if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(current-1)}if(e.key==='Home'){e.preventDefault();show(0)}if(e.key==='End'){e.preventDefault();show(5)}if(/^[1-6]$/.test(e.key))show(+e.key-1);if(e.key.toLowerCase()==='p')window.print()});const animation=document.getElementById('animation'),motion=document.getElementById('motion');if(motion){motion.onclick=()=>{const play=motion.getAttribute('aria-pressed')!=='true';motion.setAttribute('aria-pressed',play);animation.src=play?animation.dataset.motion:animation.dataset.poster;motion.textContent=play?'Pause illustrative animation':'Play illustrative animation'};matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',()=>{animation.src=animation.dataset.poster;motion.setAttribute('aria-pressed','false')})}show((+location.hash.slice(1)||1)-1);console.log('TrackGuard offline deck: '+slides.length+' slides, controls initialized');
+const slides=[...document.querySelectorAll('.slide')];let current=0;function show(n){current=Math.max(0,Math.min(5,n));slides.forEach((s,i)=>{s.classList.toggle('active',i===current);s.setAttribute('aria-hidden',i!==current)});document.getElementById('status').textContent=`Slide ${current+1} of 6`;document.getElementById('prev').disabled=current===0;document.getElementById('next').disabled=current===5;history.replaceState(null,'','#'+(current+1))}document.getElementById('prev').onclick=()=>show(current-1);document.getElementById('next').onclick=()=>show(current+1);document.getElementById('print').onclick=()=>window.print();document.addEventListener('keydown',e=>{if(/input|textarea|select/i.test(e.target.tagName))return;if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(current+1)}if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(current-1)}if(e.key==='Home'){e.preventDefault();show(0)}if(e.key==='End'){e.preventDefault();show(5)}if(/^[1-6]$/.test(e.key))show(+e.key-1);if(e.key.toLowerCase()==='p')window.print()});const animation=document.getElementById('animation'),motion=document.getElementById('motion');if(motion){motion.onclick=()=>{const play=motion.getAttribute('aria-pressed')!=='true';motion.setAttribute('aria-pressed',play);animation.src=play?animation.dataset.motion:animation.dataset.poster;motion.textContent=play?'Pause measured replay':'Play measured replay'};matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',()=>{animation.src=animation.dataset.poster;motion.setAttribute('aria-pressed','false')})}show((+location.hash.slice(1)||1)-1);console.log('TrackGuard offline deck: '+slides.length+' slides, controls initialized');
 </script></body></html>'''
 (ROOT/'slides.html').write_text(doc,encoding='utf-8')
 print('Built six slide sources and offline HTML from current metrics.json')

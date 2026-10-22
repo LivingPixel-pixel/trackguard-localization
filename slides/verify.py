@@ -21,6 +21,9 @@ with zipfile.ZipFile(ppt) as z:
     assert tables==[0,0,0,1,0,1],tables
     texts=[' '.join(d.itertext()) for d in docs]
     assert all(v in texts[3] for v in ['17.48cm','11.42cm','94.8%','31.95cm','71.24%','327/459','411 / 49'])
+    assert all(v in texts[3] for v in ['0.107° / 13.23cm','Yaw / longitudinal RMSE'])
+    assert 'REAL TRACK / SEALED DEVELOPMENT REPLAY' in texts[0]
+    assert len(docs[0].findall('.//p:pic',ns)) == 1, 'Measured cover image missing'
     assert all(v in texts[4] for v in ['18.48 / 9.95cm','72% coverage: FAIL','0 / 148','No RMSE'])
     relationships=[(n,z.read(n).decode()) for n in z.namelist() if n.endswith('.rels')]
     assert not any('TargetMode="External"' in s for _,s in relationships),'Unexpected external relationship'
@@ -55,7 +58,7 @@ report={
     'browser_checks':{'six_slide_navigation':True,'number_keys':True,'svg_text_outside_canvas':0,'remote_asset_references':0,'animation_play_pause':True},
     'authoring_engine':'Installed Microsoft PowerPoint via local COM. No new dependencies.',
     'runtime_limitation':'load_workspace_dependencies and @oai/artifact-tool were unavailable. The documented local route was inspected. Native PowerPoint used under explicit fallback authorization. Artifact Tool import/finalizer unavailable.',
-    'review':'All six PowerPoint PNGs inspected individually at 1600x900. Contact sheet reviewed. PDF pages rendered. Browser DOM and navigation checks passed. Browser screenshot API timed out.',
+    'review':'Updated measured-replay cover and yaw/longitudinal evidence slide inspected at 1600x900. Four unchanged slides retain prior visual review. All six PDF pages rendered; native overflow and input parity checked. Browser navigation evidence reused for unchanged controls.',
     'export_command':'python slides/build.py',
     'verification_command':'python slides/verify.py',
     'files':{p.name:{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in (ppt,pdf,root/'slides.html')}

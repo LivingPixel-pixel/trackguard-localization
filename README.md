@@ -4,9 +4,9 @@
 
 TrackGuard combines seven calibrated cameras, a reference map and motion signals into a vehicle pose feed. When geometric evidence is insufficient, it emits an explicit unavailable state so the consuming system can choose its fallback.
 
-![Synthetic localization demonstration with published and unavailable states](assets/localization.gif)
+![Measured real-track replay with synchronized position and yaw error](assets/track-replay.gif)
 
-*Illustrative simulation. No partner images, map or measured trajectory appear in the animation.*
+*Accelerated replay of the sealed R16 development run. Reference and estimate follow the real track; missing outputs remain gaps. Reference truth is used only for evaluation.*
 
 ## Measured performance
 
@@ -22,10 +22,11 @@ These are consumed, same-session development results with one initial truth seed
 
 ## Explore
 
-- [Live performance dashboard](https://livingpixel-pixel.github.io/trackguard-localization/)
+- [Interactive track replay and performance dashboard](https://livingpixel-pixel.github.io/trackguard-localization/): scrub through position, yaw, lateral and longitudinal errors, with rolling RMSE and availability.
 - [Six-slide business pitch](https://livingpixel-pixel.github.io/trackguard-localization/slides/trackguard-pitch.pdf), [editable PowerPoint](https://livingpixel-pixel.github.io/trackguard-localization/slides/trackguard-pitch.pptx) and [browser slides](https://livingpixel-pixel.github.io/trackguard-localization/slides/slides.html)
 - [Engine and input contract](docs/ENGINE.md)
 - [Metric definitions and limits](docs/EVIDENCE.md)
+- [Replay data and rendering contract](docs/REPLAY.md)
 
 Open the dashboard locally with `python -m http.server 8000`, then visit `http://localhost:8000`.
 

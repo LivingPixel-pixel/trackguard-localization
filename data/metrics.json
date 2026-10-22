@@ -26,7 +26,16 @@
       "position_max_m": 0.5874495693389843,
       "within20cm_all_planned_percent": 71.24183006535948,
       "within20cm_count": 327,
-      "scored_planned_excluding_seed": 459
+      "scored_planned_excluding_seed": 459,
+      "paired_scored_frames": 410,
+      "longitudinal_rmse_m": 0.13228876131541847,
+      "yaw_rmse_deg": 0.10694967979624358,
+      "absolute_lateral_p95_m": 0.25184152755336653,
+      "absolute_lateral_max_m": 0.5706257251895852,
+      "absolute_longitudinal_p95_m": 0.2595835414358725,
+      "absolute_longitudinal_max_m": 0.39985447463360063,
+      "absolute_yaw_p95_deg": 0.21044725023463787,
+      "absolute_yaw_max_deg": 0.41764192530648103
     },
     {
       "id": "lap6",
@@ -40,7 +49,19 @@
       "unavailable": 24,
       "seed_count": 1,
       "qualified": true,
-      "note": "First slice of the same continuous run."
+      "note": "First slice of the same continuous run.",
+      "paired_scored_frames": 216,
+      "longitudinal_rmse_m": 0.12705836757289463,
+      "yaw_rmse_deg": 0.1029982072922213,
+      "position_median_m": 0.1265178343356524,
+      "position_p95_m": 0.27155499693744534,
+      "position_max_m": 0.4094843904783589,
+      "absolute_lateral_p95_m": 0.1684383489139666,
+      "absolute_lateral_max_m": 0.4009659950046245,
+      "absolute_longitudinal_p95_m": 0.24847089962561614,
+      "absolute_longitudinal_max_m": 0.37244033839961094,
+      "absolute_yaw_p95_deg": 0.1955197070459805,
+      "absolute_yaw_max_deg": 0.41764192530648103
     },
     {
       "id": "lap7",
@@ -54,7 +75,19 @@
       "unavailable": 25,
       "seed_count": 0,
       "qualified": true,
-      "note": "Continues lap 6 state. No lap 7 reseed."
+      "note": "Continues lap 6 state. No lap 7 reseed.",
+      "paired_scored_frames": 194,
+      "longitudinal_rmse_m": 0.1378790501170403,
+      "yaw_rmse_deg": 0.11118415371230454,
+      "position_median_m": 0.1433511986053615,
+      "position_p95_m": 0.3540013045793492,
+      "position_max_m": 0.5874495693389843,
+      "absolute_lateral_p95_m": 0.3148103524111429,
+      "absolute_lateral_max_m": 0.5706257251895852,
+      "absolute_longitudinal_p95_m": 0.2966079463838835,
+      "absolute_longitudinal_max_m": 0.39985447463360063,
+      "absolute_yaw_p95_deg": 0.22418593375853907,
+      "absolute_yaw_max_deg": 0.41586262109084154
     },
     {
       "id": "stress",
@@ -104,7 +137,18 @@
     "Unavailable outputs remain in coverage accounting. No later-lap reset or future observation is permitted.",
     "The nominal 0.20 m uncertainty publication threshold is uncalibrated. It is not a bound on actual position error.",
     "Day coverage uses 74 camera-time bins because no ground-truth interval is available. It is not an organizer RMSE or ranking score.",
-    "All graphics showing a course, vehicle or trajectory in this public release use synthetic geometry and illustrative motion. They do not depict partner recordings or measured per-frame estimates.",
+    "The track-replay graphics show the real sealed R16 development run as derived display pixels and errors. The reference is evaluator-only. All 460 rows and 49 unavailable estimates remain represented; raw world poses and labels stay local.",
     "No measured hardware cost saving, safety certification, customer deployment, 4090 latency, live 10 Hz performance or independent-session 20 cm result is claimed."
-  ]
+  ],
+  "measured_replay": {
+    "schema": "trackguard-measured-replay-v1",
+    "path": "data/replay.json",
+    "reference_scope": "Evaluation-only reference after sealed inference",
+    "accuracy_scope": "Published eligible non-seed observations; no lap 7 reseed",
+    "supersedes_synthetic_graphics_note_for": "assets/track-replay* only",
+    "yaw_definition": "Wrapped signed estimate minus reference degrees",
+    "longitudinal_definition": "Signed error along reference heading",
+    "tail_definition": "Linear-interpolated 95th percentile of absolute errors",
+    "new_aggregates_computed_before_rounding": true
+  }
 }

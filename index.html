@@ -8,6 +8,7 @@
   <title>TrackGuard | Camera-based vehicle localization</title>
   <link rel="stylesheet" href="assets/dashboard.css">
   <script src="assets/dashboard.js" defer></script>
+  <script src="assets/replay.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#evidence">Skip to measured evidence</a>
@@ -24,34 +25,60 @@
         <div class="hero-actions"><a class="button primary" href="#evidence">Explore the evidence <span aria-hidden="true">↓</span></a><a class="text-link" href="README.md">Read the approach <span aria-hidden="true">↗</span></a></div>
         <p class="hero-boundary">A localization signal for your existing stack. Deployment readiness and hardware savings remain pilot hypotheses.</p>
       </div>
-      <figure class="instrument">
-        <div class="instrument-top"><span class="instrument-name"><span class="small-cross" aria-hidden="true">+</span> Localization output</span><span class="synthetic-label">Synthetic illustration</span></div>
-        <div class="demo-stage">
-          <svg class="demo-fallback" viewBox="0 0 640 390" role="img" aria-label="Synthetic course with illustrative camera-based pose and an unavailable segment">
-            <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#28434f" stroke-width="1"/></pattern></defs>
-            <rect width="640" height="390" fill="#102c3a"/><rect width="640" height="390" fill="url(#grid)"/>
-            <path d="M155 97C74 98 67 227 138 268L419 306C529 326 581 232 515 177L351 92C294 54 220 81 155 97Z" stroke="#405d66" stroke-width="46" fill="none"/>
-            <path d="M155 97C74 98 67 227 138 268L419 306C529 326 581 232 515 177L351 92C294 54 220 81 155 97Z" stroke="#7b9299" stroke-dasharray="6 9" stroke-width="1.5" fill="none"/>
-            <path d="M155 97C74 98 67 227 138 268L419 306" stroke="#30b8b1" stroke-width="4" fill="none"/>
-            <path d="M419 306C529 326 581 232 515 177" stroke="#e7ae58" stroke-dasharray="7 8" stroke-width="4" fill="none"/>
-            <g fill="#102c3a" stroke="#8fa9b0" stroke-width="1.5"><circle cx="154" cy="54" r="11"/><circle cx="61" cy="168" r="11"/><circle cx="123" cy="315" r="11"/><circle cx="300" cy="332" r="11"/><circle cx="563" cy="282" r="11"/><circle cx="531" cy="127" r="11"/><circle cx="340" cy="48" r="11"/></g>
-            <g fill="#c8d9dc" font-size="10" text-anchor="middle" font-family="Consolas,monospace"><text x="154" y="58">1</text><text x="61" y="172">2</text><text x="123" y="319">3</text><text x="300" y="336">4</text><text x="563" y="286">5</text><text x="531" y="131">6</text><text x="340" y="52">7</text></g>
-            <g transform="translate(297 289) rotate(8)"><circle r="27" fill="#007d7d" opacity=".2"/><rect x="-16" y="-9" width="32" height="18" rx="4" fill="#b4f0e6"/><path d="m19-6 9 6-9 6" fill="none" stroke="#b4f0e6" stroke-width="2"/></g>
-            <text x="320" y="189" fill="#c3d4d8" font-family="Consolas,monospace" font-size="12" text-anchor="middle">REFERENCE MAP + CAMERA GEOMETRY</text>
-            <text x="320" y="211" fill="#93adb5" font-family="Consolas,monospace" font-size="11" text-anchor="middle">ILLUSTRATIVE POSE STREAM</text>
-          </svg>
-          <img id="localization-demo" class="demo-image" src="assets/localization-poster.png" alt="Synthetic vehicle localization illustration with admitted poses and unavailable intervals" width="640" height="390">
-        </div>
-        <figcaption class="instrument-caption"><div class="demo-legend"><span><i class="key admitted"></i>Pose admitted</span><span><i class="key unavailable"></i>Unavailable</span></div><button id="animation-toggle" class="animation-toggle" type="button" aria-pressed="false">Play animation</button></figcaption>
-        <p class="synthetic-note">Synthetic course and motion. Not a measured trajectory.</p>
+      <figure class="instrument" id="measured-hero">
+        <div class="instrument-top"><span class="instrument-name">Measured development replay</span><span class="replay-label">R16 · laps 6 + 7</span></div>
+        <div class="hero-track-stage"><canvas id="hero-track" width="960" height="640" role="img" aria-label="Measured track replay not loaded"></canvas><p id="hero-track-empty" class="track-empty">Measured replay not loaded</p></div>
+        <figcaption class="instrument-caption"><span id="hero-replay-state">Replay paused · data not loaded</span><a href="#replay">Inspect measured replay ↓</a></figcaption>
+        <p class="replay-hero-note">Evaluation-only reference. No future reference enters inference. Overview scale cannot resolve centimetre errors.</p>
       </figure>
     </section>
     <div class="pipeline wrap" aria-label="Solution inputs and output"><span><b>07</b> calibrated cameras</span><i aria-hidden="true">+</i><span>Reference map</span><i aria-hidden="true">+</i><span>Vehicle speed and yaw rate</span><i aria-hidden="true">→</i><strong>Vehicle pose or unavailable</strong></div>
 
+    <section class="replay-section wrap" id="replay" aria-labelledby="replay-title">
+      <div class="section-heading"><div><p class="eyebrow">Recorded trajectory</p><h2 id="replay-title">Measured development replay</h2></div><a class="text-link" href="data/replay.json">View replay JSON ↗</a></div>
+      <p class="replay-scope">R16 continuous run, laps 6 + 7. Same-session, seeded development evidence. This replay is separate from the five aggregate windows below.</p>
+      <p id="replay-load-status" class="replay-load-status" role="status">Measured replay not loaded. Controls become available when the approved data loads.</p>
+      <div class="replay-desktop-layout">
+      <div class="replay-workspace">
+        <figure class="track-panel">
+          <div class="track-stage"><canvas id="replay-track" width="960" height="640" tabindex="0" role="img" aria-label="Measured track replay not loaded. Space plays or pauses; arrow keys seek frames."></canvas><p id="track-empty" class="track-empty">Real track image not loaded</p></div>
+          <figcaption class="track-legend"><span><i class="reference-key"></i>Evaluation-only reference</span><span><i class="estimate-key"></i>Published estimate</span></figcaption>
+          <p class="track-note">Real track bounds and recorded reference path. Rounded display pixels only. Gaps remain unavailable; error charts resolve detail the overview cannot show.</p>
+        </figure>
+        <div class="replay-readout">
+          <div class="replay-current"><span>Current frame</span><strong id="replay-current-state">Not loaded</strong><p id="replay-current-context">Frame unavailable · lap unavailable</p></div>
+          <dl class="replay-metrics">
+            <div><dt>Position error · absolute</dt><dd id="replay-position">Unavailable</dd></div>
+            <div><dt>Yaw error · signed, wrapped</dt><dd id="replay-yaw">Unavailable</dd></div>
+            <div><dt>Lateral error · signed</dt><dd id="replay-lateral">Unavailable</dd></div>
+            <div><dt>Longitudinal error · signed</dt><dd id="replay-longitudinal">Unavailable</dd></div>
+            <div><dt>10 s rolling position RMSE</dt><dd id="replay-rmse">Unavailable</dd></div>
+            <div><dt>10 s rolling frame publication</dt><dd id="replay-publication">Unavailable</dd></div>
+          </dl>
+          <p class="replay-definition">Rolling RMSE uses eligible published non-seed observations. Rolling publication counts all planned frames, including unavailable outputs. It is separate from one-second coverage.</p>
+        </div>
+      </div>
+      <div class="replay-controls">
+        <button id="replay-play" type="button" aria-pressed="false" disabled>Play replay</button>
+        <label class="replay-speed-label" for="replay-speed">Speed <select id="replay-speed" disabled><option value="1">1×</option><option value="8" selected>8×</option><option value="32">32×</option></select></label>
+        <output id="replay-time" for="replay-seek">0:00.0 / unavailable</output><span id="replay-transport-state">Paused</span>
+        <label class="sr-only" for="replay-seek">Recorded frame. Arrow keys seek one frame; Home and End seek the first and final frame.</label>
+        <input id="replay-seek" type="range" min="0" max="459" value="0" step="1" disabled aria-valuetext="Replay not loaded">
+        <p class="replay-keyboard-note">Slider arrows seek one frame. Space plays or pauses on the slider or track. Click a chart to seek.</p>
+      </div>
+      <div class="replay-charts" aria-label="Synchronized measured errors over elapsed recording time">
+        <figure class="replay-chart"><figcaption><h3>Absolute position error</h3><span>cm</span><output id="chart-position-current">Unavailable</output></figcaption><div id="replay-position-chart" class="replay-chart-slot"><p>Measured data not loaded</p></div></figure>
+        <figure class="replay-chart"><figcaption><h3>Signed yaw error</h3><span>wrapped degrees</span><output id="chart-yaw-current">Unavailable</output></figcaption><div id="replay-yaw-chart" class="replay-chart-slot"><p>Measured data not loaded</p></div></figure>
+        <figure class="replay-chart"><figcaption><h3>Signed directional errors</h3><span class="direction-legend"><i></i>Lateral <i></i>Longitudinal · cm</span><output id="chart-direction-current">Unavailable</output></figcaption><div id="replay-direction-chart" class="replay-chart-slot"><p>Measured data not loaded</p></div></figure>
+      </div>
+      </div>
+      <p class="replay-chart-note">Shared cursor: elapsed recording time in seconds. Missing errors and the unscored initial seed are gaps, never zero. Yaw is wrapped to ±180°. No interpolation across missing outputs.</p>
+    </section>
+
     <section class="evidence-section wrap" id="evidence" aria-labelledby="evidence-title">
       <div class="section-heading"><div><p class="eyebrow">Measured evidence</p><h2 id="evidence-title">Precision is one part of the result.</h2></div><p class="target-summary">Local targets <strong>≤ 20 cm RMSE</strong><strong>≥ 90% one-second coverage</strong></p></div>
       <div class="limits-strip"><p><span class="limit-marker teal"></span><strong>Development only</strong><span>Same-session, seeded evidence</span></p><p><span class="limit-marker amber"></span><strong id="stress-summary">Stress: coverage fails</strong><span>Not ranked</span></p><p><span class="limit-marker amber"></span><strong>Day: no initialization</strong><span>RMSE unavailable</span></p></div>
-      <div class="window-controls"><span id="window-label">Evaluation window</span><div id="window-buttons" class="window-buttons" role="group" aria-labelledby="window-label"></div></div>
+      <div class="window-controls"><span id="window-label">Aggregate window only</span><div id="window-buttons" class="window-buttons" role="group" aria-labelledby="window-label"></div></div>
       <div class="selected-context"><div><h3 id="selected-title"></h3><p id="selected-kind"></p></div><span id="selected-status" class="status-badge"></span></div>
       <p id="window-note" class="window-note"></p>
       <div class="kpi-grid" aria-live="polite" aria-atomic="true">
@@ -60,6 +87,7 @@
         <article class="kpi"><h4>Occupied one-second coverage</h4><p class="metric" id="coverage-value"></p><p class="metric-caption" id="coverage-caption"></p></article>
         <article class="kpi"><h4>Frame publication fraction</h4><p class="metric" id="publication-value"></p><p class="metric-caption" id="publication-caption"></p></article>
       </div>
+      <div class="heading-aggregates"><article><h4>Longitudinal RMSE</h4><p class="metric" id="longitudinal-value">Unavailable</p><p class="metric-caption" id="longitudinal-caption"></p></article><article><h4>Yaw RMSE · wrapped error</h4><p class="metric" id="yaw-value">Unavailable</p><p class="metric-caption" id="yaw-caption"></p></article><p>Aggregates for the selected window. Replay controls above remain on the continuous laps 6 + 7 run.</p></div>
       <div class="precision-band"><div class="precision-explanation"><h3>RMSE is not a per-output guarantee.</h3><p>Unavailable frames count as misses in the within-20-cm share.</p></div><div class="distribution-stat"><span>Position error p95</span><strong id="p95-value"></strong><small id="distribution-caption"></small></div><div class="distribution-stat"><span>Planned frames within 20 cm</span><strong id="within-value"></strong><small id="within-caption"></small></div></div>
       <div class="chart-grid">
         <figure class="chart-panel"><figcaption><h3>Accuracy against the target</h3><span>RMSE in centimetres · lower is better</span></figcaption><div id="accuracy-chart" class="chart-slot"></div><p class="chart-footnote" id="accuracy-footnote">Only finite published estimates contribute to RMSE. Initial truth seed excluded.</p></figure>
@@ -73,6 +101,6 @@
     <section class="method-section wrap" id="methodology" aria-labelledby="method-title"><div class="section-heading"><div><p class="eyebrow">Scope and definitions</p><h2 id="method-title">Know what the numbers mean.</h2></div><a class="text-link" href="data/metrics.json">View aggregate JSON <span aria-hidden="true">↗</span></a></div><details class="disclosure"><summary>How accuracy, availability and initialization are evaluated <span aria-hidden="true">+</span></summary><div class="disclosure-content"><ul id="method-list"></ul></div></details><details class="disclosure"><summary>Exact values for the selected window <span aria-hidden="true">+</span></summary><div class="disclosure-content"><p>Unrounded approved aggregates. Presentation values above are rounded.</p><pre id="exact-values"></pre></div></details><p class="source-note"><span id="source-status">Approved embedded aggregate snapshot</span><span id="recorded-date"></span></p></section>
   </main>
   <footer class="site-footer wrap"><a class="brand footer-brand" href="#">TrackGuard</a><p>Camera-based localization. Evidence with boundaries.</p><nav aria-label="Project resources"><a href="README.md">README</a><a href="assets/dashboard.js">Dashboard code</a><a href="slides/trackguard-pitch.pdf">Pitch PDF</a><a href="slides/slides.html">Slide deck</a></nav></footer>
-  <noscript><p class="noscript">JavaScript is required to display the approved metrics and switch evaluation windows. <a href="data/metrics.json">Read the aggregate JSON</a>.</p></noscript>
+  <noscript><p class="noscript">JavaScript is required for the measured replay and aggregate window controls. <a href="data/replay.json">Read the measured replay JSON</a>. <a href="data/metrics.json">Read the aggregate JSON</a>.</p></noscript>
 </body>
 </html>
