@@ -1,0 +1,110 @@
+{
+  "schema": "trackguard-public-aggregates-v1",
+  "product": "TrackGuard",
+  "recorded_at": "2026-10-22",
+  "target": {
+    "position_rmse_m": 0.2,
+    "lateral_rmse_m": 0.2,
+    "coverage_percent": 90
+  },
+  "windows": [
+    {
+      "id": "later_laps",
+      "label": "Development laps 6 + 7",
+      "kind": "same-session development",
+      "coverage_percent": 94.8,
+      "planned": 460,
+      "published": 411,
+      "unavailable": 49,
+      "seed_count": 1,
+      "qualified": true,
+      "note": "One continuous run. One initial truth seed. No reset between laps. Consumed development data, not untouched validation.",
+      "position_rmse_m": 0.1747753326636938,
+      "lateral_rmse_m": 0.11421952782837566,
+      "position_median_m": 0.13351518078480298,
+      "position_p95_m": 0.31945388599089014,
+      "position_max_m": 0.5874495693389843,
+      "within20cm_all_planned_percent": 71.24183006535948,
+      "within20cm_count": 327,
+      "scored_planned_excluding_seed": 459
+    },
+    {
+      "id": "lap6",
+      "label": "Development lap 6",
+      "kind": "same-session development",
+      "position_rmse_m": 0.1533886102612008,
+      "lateral_rmse_m": 0.08593158317855984,
+      "coverage_percent": 95.0,
+      "planned": 241,
+      "published": 217,
+      "unavailable": 24,
+      "seed_count": 1,
+      "qualified": true,
+      "note": "First slice of the same continuous run."
+    },
+    {
+      "id": "lap7",
+      "label": "Development lap 7",
+      "kind": "same-session development",
+      "position_rmse_m": 0.1958587847117569,
+      "lateral_rmse_m": 0.13910438917442194,
+      "coverage_percent": 95.5,
+      "planned": 219,
+      "published": 194,
+      "unavailable": 25,
+      "seed_count": 0,
+      "qualified": true,
+      "note": "Continues lap 6 state. No lap 7 reseed."
+    },
+    {
+      "id": "stress",
+      "label": "131-second stress window",
+      "kind": "same-session development stress",
+      "position_rmse_m": 0.1847964735,
+      "lateral_rmse_m": 0.099534224,
+      "coverage_percent": 72.0,
+      "planned": 263,
+      "published": 179,
+      "unavailable": 84,
+      "seed_count": 1,
+      "qualified": false,
+      "note": "Separate seeded window. Accuracy passes on published poses, but one-second coverage fails the 90% target. Not ranked."
+    },
+    {
+      "id": "day",
+      "label": "Day-session blind replay",
+      "kind": "different-session visual initialization",
+      "position_rmse_m": null,
+      "lateral_rmse_m": null,
+      "coverage_percent": 0.0,
+      "planned": 148,
+      "published": 0,
+      "unavailable": 148,
+      "seed_count": 0,
+      "qualified": false,
+      "note": "73.9-second recording, 148 complete groups at 2 Hz. No supplied initial pose or truth labels. 145 geometry rejects and 3 single-camera results; no approved three-camera fix. Fusion never initialized. RMSE unavailable. Different initialization condition from the night benchmark."
+    }
+  ],
+  "runtime": {
+    "source": "Earlier R14 raw geometry profile, not R16 end-to-end latency",
+    "mean_ms": 379.491,
+    "p95_ms": 484.995,
+    "offline_setup_s": 162.451,
+    "hardware": "AMD Ryzen AI 7 350 CPU",
+    "numerical_threads": 2,
+    "sampling_hz": 2,
+    "live_performance_demonstrated": false,
+    "gpu_performance_measured": false
+  },
+  "methodology": [
+    "Position RMSE = sqrt(mean(dx^2 + dy^2)) over finite published estimates; the single initial truth seed is excluded from local RMSE.",
+    "Lateral RMSE projects the error across the ground-truth vehicle heading.",
+    "One-second coverage is the percentage of evaluated one-second bins containing at least one pose. It differs from the fraction of published frames.",
+    "The combined publication fraction is 411/460, or 89.35%. Its occupied one-second coverage is 94.8%.",
+    "Unavailable outputs remain in coverage accounting. No later-lap reset or future observation is permitted.",
+    "The nominal 0.20 m uncertainty publication threshold is uncalibrated. It is not a bound on actual position error.",
+    "Day coverage uses 74 camera-time bins because no ground-truth interval is available. It is not an organizer RMSE or ranking score.",
+    "All graphics showing a course, vehicle or trajectory in this public release use synthetic geometry and illustrative motion. They do not depict partner recordings or measured per-frame estimates.",
+    "No measured hardware cost saving, safety certification, customer deployment, 4090 latency, live 10 Hz performance or independent-session 20 cm result is claimed."
+  ]
+}

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trackguard"
+version = "0.1.0"
+description = "Portable SIFT BODY localization and causal motion fusion"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24,<3", "opencv-python-headless>=4.8,<5"]
+
+[project.scripts]
+trackguard = "trackguard.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
