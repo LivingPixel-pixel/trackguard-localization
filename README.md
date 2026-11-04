@@ -4,6 +4,12 @@
 
 TrackGuard combines seven calibrated cameras, a reference map and motion signals into a vehicle pose feed. When geometric evidence is insufficient, it emits an explicit unavailable state so the consuming system can choose its fallback.
 
+## My part
+
+I led the hackathon team and coordinated work across teammates and AI agents. The project was developed with Tim Roth, Mohamed Lebdah, Rohel Shrestha and Jonas Klupsch; geometry and fusion were team work, with AI assistance during development.
+
+TrackGuard carries that work forward as a portable engine, an inspectable replay and a pilot proposal. I want someone evaluating it to see both the measured result and the cases where it stops working. The numbers below describe the recorded development run, not deployment readiness.
+
 ![Measured real-track replay with synchronized position and yaw error](assets/track-replay.gif)
 
 *Accelerated replay of the sealed R16 development run. Reference and estimate follow the real track; missing outputs remain gaps. Reference truth is used only for evaluation.*
